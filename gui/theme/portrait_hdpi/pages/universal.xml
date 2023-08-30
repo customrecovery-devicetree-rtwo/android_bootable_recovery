@@ -217,7 +217,36 @@
 				<listitem name="{@include_kernel_log}">
 					<data variable="tw_include_kernel_log"/>
 				</listitem>
+				<listitem name="{@include_logcat}">
+					<data variable="tw_include_logcat"/>
+				</listitem>
 			</listbox>
+
+			<button style="btn_raised">
+				<condition var1="tw_action" var2="copylog"/>
+				<text>{@select_storage_hdr}</text>
+				<placement x="%center_x%" y="%row_btn2_y%" placement="4"/>
+				<action function="set">of_show_storage_selection=1</action>
+			</button>
+
+			<button>
+				<condition var1="tw_action" var2="copylog"/>
+				<condition var1="of_show_storage_selection" var2="1"/>
+				<fill color="%darktransparent%"/>
+				<placement x="0" y="%ab_h%" w="%screen_w%" h="%screen_h%"/>
+				<action function="set">of_show_storage_selection=0</action>
+			</button>
+
+			<template name="storage_dialog"/>
+
+			<button style="btn_dlg_hl">
+				<condition var1="tw_action" var2="copylog"/>
+				<condition var1="of_show_storage_selection" var2="1"/>
+				<placement x="%btn_raised_right_x%" y="%row3_1_y%" placement="1"/>
+				<text>{@cancel_btn}</text>
+				<action function="set">of_show_storage_selection=0</action>
+				<action function="page">confirm_action</action>
+			</button>
 
 			<slider style="slider_action">
 				<placement x="%center_x%" y="%slider_y%" placement="5"/>
