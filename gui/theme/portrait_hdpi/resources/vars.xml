@@ -14,8 +14,11 @@
 		<variable name="update_action" value="0"/>
 		
 		<variable name="of_decrypt_from_menu" value="0"/>
-		
-		<variable name="mmgui_path" value="/data/adb/modules"/>
+
+		<variable name="ap_path" value="/data/adb/ap"/>
+		<variable name="ksu_path" value="/data/adb/ksu"/>
+		<variable name="magisk_path" value="/data/adb/magisk"/>
+		<variable name="rmm_path" value="/data/adb/modules"/>
 
 		<!-- Lockscreen -->
 		<variable name="clock_style" value="0" persist="1"/>

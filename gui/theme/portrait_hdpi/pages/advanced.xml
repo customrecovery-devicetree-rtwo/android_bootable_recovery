@@ -47,11 +47,37 @@
 					<icon res="harddisk"/>
 					<action function="page">part_options</action>
 				</listitem>
-				<listitem name="Magisk Manager"><condition var1="no_magisk" op="!=" var2="1"/>
+				<listitem name="Magisk Manager">
+					<condition var1="fileexists" var2="%magisk_path%"/>
+					<condition var1="no_magisk" op="!=" var2="1"/>
 					<icon res="magisk"/>
-					<action function="set">ftls_running=1</action>
-					<action function="set">ft_mm_found=0</action>
-					<action function="page">magisk_mount</action>
+					<action function="set">rmm_found=-1</action>
+					<action function="set">rmm_type=magisk</action>
+					<action function="page">modules_mount</action>
+				</listitem>
+				<listitem name="Magisk Manager">
+					<condition var1="fileexists" op="!=" var2="%magisk_path%"/>
+					<condition var1="fileexists" op="!=" var2="%ap_path%"/>
+					<condition var1="fileexists" op="!=" var2="%ksu_path%"/>
+					<condition var1="no_magisk" op="!=" var2="1"/>
+					<icon res="magisk"/>
+					<action function="set">rmm_found=-1</action>
+					<action function="set">rmm_type=magisk</action>
+					<action function="page">modules_mount</action>
+				</listitem>
+				<listitem name="{@ap_modules}">
+					<condition var1="fileexists" var2="%ap_path%"/>
+					<icon res="apatch"/>
+					<action function="set">rmm_found=-1</action>
+					<action function="set">rmm_type=ap</action>
+					<action function="page">modules_mount</action>
+				</listitem>
+				<listitem name="{@ksu_modules}">
+					<condition var1="fileexists" var2="%ksu_path%"/>
+					<icon res="kernelsu"/>
+					<action function="set">rmm_found=-1</action>
+					<action function="set">rmm_type=ksu</action>
+					<action function="page">modules_mount</action>
 				</listitem>
 				<listitem name="{@adb_sideload_btn}">
 					<icon res="bs_adv_adb"/>
