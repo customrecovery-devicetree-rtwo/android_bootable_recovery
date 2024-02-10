@@ -181,12 +181,7 @@
 				<listitem name="{@sph_sph}">
 					<condition var1="no_splash_change" op="!=" var2="1"/>
 					<icon res="boot_splash"/>
-					<action function="set">spl_logo_type=w</action>
-					<action function="set">spl_bg_color=#ED6F02</action>
-					<action function="set">spl_bg_user=0</action>
-					<action function="set">spl_bg_on=0</action>
-					<action function="set">spl_ofr=1</action>
-					<action function="page">ext_custom_splash</action>
+					<action function="page">get_splash_info</action>
 				</listitem>
 				<listitem name="{@keyboard_title}">
 					<icon res="keyboard"/>
@@ -1689,9 +1684,10 @@
 				<condition var1="spl_bg_user" var2="1"/>
 				<placement x="%ab_btn1_x%" y="%ab_y%" placement="4"/>
 				<action function="set">spl_bg_user=0</action>
+				<action function="set">spl_bg_on=0</action>
 				<action function="set">spl_logo_type=w</action>
 				<action function="set">spl_ofr=1</action>
-				<action function="set">spl_bg_color=#ED6F02</action>
+				<action function="set">spl_bg_color=#1E1F22</action>
 				<action function="page">ext_custom_splash</action>
 			</button>
 
@@ -1776,6 +1772,7 @@
 				<placement x="0" y="%row4_3_y%" w="%screen_w%" h="%spl_list_h%"/>
 				<data name="spl_bg_color"/>
 				<iconsize w="%col1_x_caption%" h="%bl_h1%" padding="25"/>
+				<listitem name="{@spl_image}">#1E1F22</listitem>
 				<listitem name="{@spl_accent}"><condition var1="accent" op="!=" var2="#d86100"/><condition var1="accent" op="!=" var2="#ed6f02"/>%accent%</listitem>
 				<listitem name="{@spl_orange}">#ED6F02</listitem>
 				<listitem name="{@spl_white}">#FFFFFF</listitem>
@@ -1905,7 +1902,12 @@
 				<action function="set">tw_splash_png_path=%tw_zip_location_tmp%</action>
 				<action function="set">spl_bg_user=1</action>
 				<action function="set">spl_bg_on=1</action>
-				<action function="page">ext_custom_splash</action>
+				<action function="set">spl_bg_color=#1E1F22</action>
+				<action function="cmd">
+						cp "%tw_splash_png_path%/%tw_splash_png_name%" "/twres/images/Splash/user.png";
+				</action>
+				<action function="set">of_reload_back=ext_custom_splash</action>
+				<action function="reload"/>
 			</action>
 
 			<template name="gestures"/>
@@ -2098,6 +2100,70 @@
 				<action function="wlfx"/>
 				<action function="overlay"/>
 				<action function="page">ext_custom</action>
+			</action>
+		</page>
+
+		<page name="get_splash_info">
+			<template name="dialog_body"/>
+
+			<image>
+				<image resource="snackbar"/>
+				<placement x="0" y="%row_nav_y%" placement="2"/>
+			</image>
+
+			<text style="text_body1">
+				<placement x="%snackbar_text_x%" y="%snackbar_text_y%"/>
+				<text>{@lang_wait}</text>
+			</text>
+
+			<action>
+				<action function="set">spl_logo_type=w</action>
+				<action function="set">spl_bg_color=#1E1F22</action>
+				<action function="set">spl_bg_user=0</action>
+				<action function="set">spl_bg_on=0</action>
+				<action function="set">spl_ofr=1</action>
+				<action function="ftls">
+					splash=/twres/splash.xml
+
+					cat $splash | grep "SED Splash"
+					if [ $? -ne 0 ]; then
+						exit 0;
+					fi;
+
+					spl_logo_string=`cat $splash | grep 'image name="splash_logo"'`;
+					spl_bg_user_string=`cat $splash | grep 'image name="splash_bg"'`;
+					spl_bg_color_string=`cat $splash | grep 'background color='`;
+
+					echo ${spl_logo_string} | grep '!--' > /dev/null;
+					if [ $? -ne 0 ]; then
+						spl_logo_type=`echo ${spl_logo_string} | sed 's/.*Splash\/logo_\(.\).*/\1/'`;
+					fi;
+
+					echo ${spl_bg_user_string} | grep '!--' > /dev/null;
+					if [ $? -ne 0 ]; then
+						twrp xset spl_bg_on=1;
+					fi;
+
+					echo ${spl_bg_color_string} | grep '!--' > /dev/null;
+					if [ $? -ne 0 ]; then
+						spl_bg_color=`echo ${spl_bg_color_string} | sed 's/.*color="\([^"]*\)".*/\1/'`;
+					fi;
+
+					if [[ ! -z ${spl_logo_type} ]]; then
+						twrp xset spl_logo_type=${spl_logo_type};
+						twrp xset spl_ofr=0;
+						twrp xset spl_bg_user=1;
+					fi;
+
+					if [[ ! -z ${spl_bg_color} ]]; then
+						twrp xset spl_bg_color=${spl_bg_color};
+						twrp xset spl_bg_user=1;
+					fi;
+
+					exit 0;
+				</action>
+				<action function="overlay"/>
+				<action function="page">ext_custom_splash</action>
 			</action>
 		</page>
 	</pages>
