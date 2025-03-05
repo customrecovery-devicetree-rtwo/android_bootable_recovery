@@ -938,7 +938,7 @@
 
 		<!-- MMGUI -->
 		<string name="mm_module_active">Active</string>
-		<string name="mm_module_mount">Auto mount</string>
+		<string name="mm_module_mount">Skip mount</string>
 		<string name="mm_modules">Modules</string>
 		<string name="mm_ver">Magisk Version</string>
 		<string name="mm_mod_ver">Module Version</string>
