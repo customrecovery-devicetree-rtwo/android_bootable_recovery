@@ -1216,5 +1216,11 @@
 		<string name="disabling_AVB2_complete">vbmeta AVB2.0 is disabled!</string>
 		<string name="disable_avb2_success_msg">Disable vbmeta AVB2.0: processing '{1}' successfully.</string>
 		<string name="disable_avb2_fail_msg">Disable vbmeta AVB2.0: processing '{1}' failed!</string>
+
+		<string name="enable_hw_control">Hardware GUI control</string>
+		<string name="enable_hw_control_1">This will enable navigation through</string>
+		<string name="enable_hw_control_2">the interface using the hardware</string>
+		<string name="enable_hw_control_3">volume and power buttons.</string>
+		<string name="enable_hw_control_4">Gestures will be disabled. Proceed?</string>
 	</resources>
 </language>
