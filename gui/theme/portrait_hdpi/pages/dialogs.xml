@@ -513,7 +513,7 @@
 		</page>
 
 		<page name="dialog_enable_hw_mode">
-			<template name="dialog_body"/>
+			<template name="dialog_body_noback"/>
 
 			<button>
 				<placement x="%bg_storage_x%" y="%bg_storage_y%"/>
@@ -567,18 +567,18 @@
 					<action function="set">navbar_disable_tmp=0</action>
 					<action function="set">navbar_disable_add_tmp=0</action>
 					<action function="overlay">apply_changes</action>
-					<!--action function="set">install_back=advanced</action>
-					<action function="page">mod_magisk</action-->
 				</actions>
 			</button>
 
 			<action>
 				<touch key="home"/>
+				<action function="set">of_hw_control_mode=0</action>
 				<action function="page">main</action>
 			</action>
 
 			<action>
 				<touch key="back"/>
+				<action function="set">of_hw_control_mode=0</action>
 				<action function="overlay"/>
 			</action>
 		</page>
