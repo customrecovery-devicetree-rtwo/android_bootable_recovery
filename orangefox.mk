@@ -740,4 +740,10 @@ endif
 ifeq ($(OF_USE_LEGACY_TIME_FIXUP),1)
     LOCAL_CFLAGS += -DOF_USE_LEGACY_TIME_FIXUP
 endif
+
+ifneq ($(TW_LOAD_VENDOR_MODULES),)
+    ifeq ($(OF_LOAD_PREBUILT_MODULES),1)
+        LOCAL_CFLAGS += -DOF_LOAD_PREBUILT_MODULES
+    endif
+endif
 #

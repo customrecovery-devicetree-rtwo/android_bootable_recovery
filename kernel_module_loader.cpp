@@ -93,19 +93,29 @@ bool KernelModuleLoader::Load_Vendor_Modules() {
 	if (ven) {
 		LOGINFO("Checking mounted /vendor\n");
 		ven->Mount(true);
+		for (auto&& module_dir:vendor_module_dirs) {
+			Try_And_Load_Modules(module_dir, true);
+			if (requested_modules_loaded >= expected_module_count) goto exit;
+		}
 	}
+
 	if (ven_dlkm) {
 		LOGINFO("Checking mounted /vendor_dlkm\n");
 		ven_dlkm->Mount(true);
+		Try_And_Load_Modules(vendor_dlkm_base_dir, true);
+		if (requested_modules_loaded >= expected_module_count) goto exit;
 	}
 
+#ifdef OF_LOAD_PREBUILT_MODULES
+	if (ven)
+		ven->UnMount(false);
+
+	LOGINFO("Checking prebuilt modules\n");
 	for (auto&& module_dir:vendor_module_dirs) {
 		Try_And_Load_Modules(module_dir, true);
 		if (requested_modules_loaded >= expected_module_count) goto exit;
 	}
-
-	Try_And_Load_Modules(vendor_dlkm_base_dir, true);
-	if (requested_modules_loaded >= expected_module_count) goto exit;
+#endif
 
 exit:
 	if (ven)
