@@ -1891,6 +1891,8 @@ bool TWPartition::Wipe(string New_File_System) {
 			wiped = Wipe_F2FS();
 		else if (New_File_System == "vfat")
 			wiped = Wipe_FAT();
+		else if (New_File_System == "emmc")
+			wiped = BlkDiscard();
 		else {
 			LOGERR("Unable to wipe '%s' -- unknown file system '%s'\n", Mount_Point.c_str(), New_File_System.c_str());
 			return false;
