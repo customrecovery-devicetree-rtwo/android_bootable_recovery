@@ -986,7 +986,6 @@
 		<string name="welcome_msg2"><!-- If welcome message is too big in your lang, use this string --></string>
 
 		<string name="fox_welcome">Welcome to OrangeFox Recovery!</string>
-		<string name="fox_platform">[Platform]  : {1}</string>
 		<string name="fox_release">[Release]   : {1}</string>
 		<string name="fox_variant">[Variant]   : {1}</string>
 		<string name="fox_codebase">[Codebase]  : {1}, {2}</string>
@@ -1004,6 +1003,7 @@
 		<string name="fox_unencrypted">* Storage is not encrypted</string>
 		<string name="fox_display">* Display:    {1}</string>
 		<string name="fox_device">* Device:     {1} ({2})</string>
+		<string name="fox_platform">* Platform:   {1}</string>
 		<string name="fox_dynamic_yes">* Dynamic:    yes</string>
 		<string name="fox_dynamic_no">* Dynamic:    no</string>
 		<string name="fox_boot_slot">* Boot slot:  {1}</string>
