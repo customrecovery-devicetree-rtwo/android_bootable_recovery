@@ -106,7 +106,7 @@ bool KernelModuleLoader::Load_Vendor_Modules() {
 		if (requested_modules_loaded >= expected_module_count) goto exit;
 	}
 
-#ifdef OF_LOAD_PREBUILT_MODULES
+#ifndef OF_SKIP_PREBUILT_MODULES
 	if (ven)
 		ven->UnMount(false);
 
