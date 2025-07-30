@@ -768,4 +768,8 @@ endif
 ifeq ($(OF_FORCE_CASEFOLDING),1)
      LOCAL_CFLAGS += -DOF_FORCE_CASEFOLDING
 endif
+
+ifeq ($(FOX_USE_DMSETUP),1)
+    LOCAL_CFLAGS += -DFOX_USE_DMSETUP='"1"'
+endif
 #
