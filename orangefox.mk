@@ -787,9 +787,7 @@ ifeq ($(OF_USE_DMCTL),1)
   else
     LOCAL_CFLAGS += -DOF_USE_DMCTL='"1"'
     TWRP_REQUIRED_MODULES += dmctl
-    LOCAL_POST_INSTALL_CMD += \
-    $(hide) cp -f $(TARGET_OUT_ETC)/../bin/dmctl $(TARGET_RECOVERY_ROOT_OUT)/system/bin/dmctl;
-    #$(hide) cp -f $(TARGET_OUT_EXECUTABLES_UNSTRIPPED)/dmctl $(TARGET_RECOVERY_ROOT_OUT)/system/bin/dmctl;
+    RECOVERY_BINARY_SOURCE_FILES += $(TARGET_OUT_EXECUTABLES)/dmctl
   endif
 endif
 #
