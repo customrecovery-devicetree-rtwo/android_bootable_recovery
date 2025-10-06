@@ -374,7 +374,6 @@
 			</action>
 		</page>
 
-
 		<page name="mod_pass">
 			<action>
 				<action function="queueclear"/>
@@ -390,6 +389,57 @@
 				<action function="set">tw_existpage=fox_modules_confirm</action>
 				<action function="page">filecheck</action>
 			</action>
+		</page>
+
+		<page name="mod_kernelsu">
+		  <action>
+			<action function="queueclear"/>
+			<action function="set">fox_m_author=KernelSU Team</action>
+			<action function="set">fox_m_name={@module_install} KernelSU</action>
+			<action function="set">tw_file=KernelSU_Installer.zip</action>
+			<action function="set">tw_filename=/FFiles/KernelSU/KernelSU_Installer.zip</action>
+			<action function="set">tw_filecheck=%tw_filename%</action>
+			<action function="set">tw_zip_location=/FFiles/KernelSU</action>
+			<action function="set">fox_install_built_in_zip=1</action>
+			<action function="queuezip"/>
+			<action function="set">tw_notexistpage=fox_modules_confirm</action>
+			<action function="set">tw_existpage=fox_modules_confirm</action>
+			<action function="page">filecheck</action>
+		  </action>
+		</page>
+
+		<page name="mod_kernelsu_next">
+		  <action>
+			<action function="queueclear"/>
+			<action function="set">fox_m_author=KernelSU Team</action>
+			<action function="set">fox_m_name={@module_install} KernelSU Next</action>
+			<action function="set">tw_file=KernelSU_Next_Installer.zip</action>
+			<action function="set">tw_filename=/FFiles/KernelSU/KernelSU_Next_Installer.zip</action>
+			<action function="set">tw_filecheck=%tw_filename%</action>
+			<action function="set">tw_zip_location=/FFiles/KernelSU</action>
+			<action function="set">fox_install_built_in_zip=1</action>
+			<action function="queuezip"/>
+			<action function="set">tw_notexistpage=fox_modules_confirm</action>
+			<action function="set">tw_existpage=fox_modules_confirm</action>
+			<action function="page">filecheck</action>
+		  </action>
+		</page>
+
+		<page name="mod_sukisu">
+		  <action>
+			<action function="queueclear"/>
+			<action function="set">fox_m_author=SukiSU Team</action>
+			<action function="set">fox_m_name={@module_install} SukiSU Ultra 3.1.8</action>
+			<action function="set">tw_file= KernelSU_Suki_Installer.zip</action>
+			<action function="set">tw_filename=/FFiles/KernelSU/KernelSU_Suki_Installer.zip</action>
+			<action function="set">tw_filecheck=%tw_filename%</action>
+			<action function="set">tw_zip_location=/FFiles/KernelSU</action>
+			<action function="set">fox_install_built_in_zip=1</action>
+			<action function="queuezip"/>
+			<action function="set">tw_notexistpage=fox_modules_confirm</action>
+			<action function="set">tw_existpage=fox_modules_confirm</action>
+			<action function="page">filecheck</action>
+		  </action>
 		</page>
 
 		<page name="fox_modules">
@@ -424,7 +474,7 @@
 			</text>
 
 			<listbox style="btn_list">
-				<placement x="0" y="%row3_2a_y%" w="%screen_w%" h="%bl_h6%"/>
+				<placement x="0" y="%row3_2a_y%" w="%screen_w%" h="%bl_h4%"/>
 				<listitem name="{@module_of_set}">
 					<condition var1="fileexists" var2="/FFiles/OF_backup_settings/OF_backup_settings.zip"/>
 					<icon res="bs_btn_archive"/>
@@ -494,6 +544,37 @@
 					<action function="page">filecheck</action>
 				</listitem>
 
+			</listbox>
+
+			<text style="caption">
+				<condition var1="fox_vab_device" var2="1"/>
+				<condition var1="fox_support_ksu" var2="1"/>
+				<placement x="%col1_x_caption%" y="%row7_1a_y%"/>
+				<text>Other root: needs supported kernel</text>
+			</text>
+
+			<listbox style="btn_list">
+				<condition var1="fox_vab_device" var2="1"/>
+				<condition var1="fox_support_ksu" var2="1"/>
+				<placement x="0" y="%row7_2a_y%" w="%screen_w%" h="%bl_h4%"/>
+
+				<listitem name="{@module_install} KernelSU %ksu_ver%">
+				<condition var1="fileexists" var2="/FFiles/KernelSU/KernelSU_Installer.zip"/>
+					<icon res="bs_btn_archive"/>
+					<action function="page">mod_kernelsu</action>
+				</listitem>
+
+				<listitem name="{@module_install} KernelSU Next %ksun_ver%">
+				<condition var1="fileexists" var2="/FFiles/KernelSU/KernelSU_Next_Installer.zip"/>
+					<icon res="bs_btn_archive"/>
+					<action function="page">mod_kernelsu_next</action>
+				</listitem>
+
+				<listitem name="{@module_install} SukiSU Ultra %ssu_ver%">
+				<condition var1="fileexists" var2="/FFiles/KernelSU/KernelSU_Suki_Installer.zip"/>
+					<icon res="bs_btn_archive"/>
+					<action function="page">mod_sukisu</action>
+				</listitem>
 			</listbox>
 
 			<template name="base"/>
