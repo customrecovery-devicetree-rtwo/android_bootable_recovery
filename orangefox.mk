@@ -826,4 +826,9 @@ endif
 ifeq ($(OF_DISABLE_ORS_AUTO_REBOOT),1)
     LOCAL_CFLAGS += -DOF_DISABLE_ORS_AUTO_REBOOT
 endif
+
+# enable the FRP deletion addon?
+ifeq ($(OF_ENABLE_FRP_ADDON),1)
+    LOCAL_CFLAGS += -DOF_ENABLE_FRP_ADDON
+endif
 #

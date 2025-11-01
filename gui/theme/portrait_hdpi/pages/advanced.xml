@@ -323,6 +323,23 @@
 			</action>
 		</page>
 
+		<page name="mod_factory_rp">
+			<action>
+				<action function="queueclear"/>
+				<action function="set">fox_m_author=DarthJabba9</action>
+				<action function="set">fox_m_name={@remove_factory_reset_protection}</action>
+				<action function="set">tw_file=OF_DelFRP.zip</action>
+				<action function="set">tw_filename=/FFiles/OF_DelFRP/OF_DelFRP.zip</action>
+				<action function="set">tw_filecheck=%tw_filename%</action>
+				<action function="set">tw_zip_location=/FFiles/OF_DelFRP</action>
+				<action function="set">fox_install_built_in_zip=1</action>
+				<action function="queuezip"/>
+				<action function="set">tw_notexistpage=fox_modules_confirm</action>
+				<action function="set">tw_existpage=fox_modules_confirm</action>
+				<action function="page">filecheck</action>
+			</action>
+		</page>
+
 		<page name="mod_magisk">
 			<action>
 				<action function="queueclear"/>
@@ -526,6 +543,14 @@
 					<action function="set">tw_existpage=fox_modules_confirm</action>
 					<action function="page">filecheck</action>
 				</listitem>
+
+				<listitem name="{@remove_factory_reset_protection}">
+					<condition var1="enable_frp_addon" op="==" var2="1"/>
+					<condition var1="fileexists" var2="/FFiles/OF_DelFRP/OF_DelFRP.zip"/>
+					<icon res="bs_btn_archive"/>
+					<action function="page">mod_factory_rp</action>
+				</listitem>
+
 				<listitem name="{@module_initd}">
 					<condition var1="fox_vab_device" op="!=" var2="1"/>
 					<condition var1="fileexists" var2="%of_initd_zip%"/>
