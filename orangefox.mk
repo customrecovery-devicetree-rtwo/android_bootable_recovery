@@ -832,4 +832,9 @@ endif
 ifeq ($(OF_ENABLE_FRP_ADDON),1)
     LOCAL_CFLAGS += -DOF_ENABLE_FRP_ADDON
 endif
+
+# fastboot reboot
+ifeq ($(OF_NO_REBOOT_FASTBOOT),1)
+    LOCAL_CFLAGS += -DOF_NO_REBOOT_FASTBOOT
+endif
 #
