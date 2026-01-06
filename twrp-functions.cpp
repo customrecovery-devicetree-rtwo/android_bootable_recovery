@@ -2,7 +2,7 @@
 	Copyright 2012 bigbiff/Dees_Troy TeamWin
 	This file is part of TWRP/TeamWin Recovery Project.
 
-	Copyright (C) 2018-2025 OrangeFox Recovery Project
+	Copyright (C) 2018-2026 OrangeFox Recovery Project
 	This file is part of the OrangeFox Recovery Project.
 
 	TWRP is free software: you can redistribute it and/or modify
@@ -4670,7 +4670,7 @@ bool TWFunc::To_Skip_OrangeFox_Process(void)
 string TWFunc::ConvertTime(time_t time)
 {
   char buff[32];
-  strftime(buff, 32, "%y/%m/%d %H:%M", localtime(&time));
+  strftime(buff, sizeof(buff), "%d %b %Y | %H:%M", localtime(&time));
   return buff;
 }
 
