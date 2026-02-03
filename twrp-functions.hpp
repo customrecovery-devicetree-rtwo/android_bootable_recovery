@@ -2,8 +2,8 @@
 	Copyright 2012 bigbiff/Dees_Troy TeamWin
 	This file is part of TWRP/TeamWin Recovery Project.
 
-  	Copyright (C) 2018-2025 OrangeFox Recovery Project
- 	This file is part of the OrangeFox Recovery Project
+	Copyright (C) 2018-2026 OrangeFox Recovery Project
+	This file is part of the OrangeFox Recovery Project
  
 	TWRP is free software: you can redistribute it and/or modify
 	it under the terms of the GNU General Public License as published by
@@ -148,6 +148,7 @@ public:
 	static bool Toggle_MTP(bool enable);                                        // Disables MTP if enable is false and re-enables MTP if enable is true and it was enabled the last time it was toggled off
 	static std::string to_string(unsigned long value); //convert ul to string
 	static void SetPerformanceMode(bool mode); // support recovery.perf.mode
+	static std::string Get_Balanced_Governor(void);	// Get the supported "balanced" CPU governor (schedutil, interactive, or ondemand)
 	static void Disable_Stock_Recovery_Replace(); // Disable stock ROMs from replacing OrangeFox with stock recovery
 	static void Disable_Stock_Recovery_Replace_Func(); // Disable stock ROMs from replacing OrangeFox with stock recovery (/system must be already mounted)	
 	static unsigned long long IOCTL_Get_Block_Size(const char* block_device);
