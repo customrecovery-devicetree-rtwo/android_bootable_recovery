@@ -212,9 +212,9 @@ void inline Reset_Prop_From_Partition(std::string prop, std::string def, TWParti
 
 void inline Process_ResetProps(TWPartition *ven, TWPartition *odm) {
 	// Reset the crypto volume props according to os.
-	Reset_Prop_From_Partition("ro.crypto.dm_default_key.options_format.version", "", ven, odm);
-	Reset_Prop_From_Partition("ro.crypto.volume.metadata.method", "", ven, odm);
-	Reset_Prop_From_Partition("ro.crypto.volume.options", "", ven, odm);
+	Reset_Prop_From_Partition("ro.crypto.dm_default_key.options_format.version", "2", ven, odm);
+	Reset_Prop_From_Partition("ro.crypto.volume.metadata.method", "dm-default-key", ven, odm);
+	Reset_Prop_From_Partition("ro.crypto.volume.options", "aes-256-xts:aes-256-cts:v2", ven, odm);
 #ifdef OF_FORCE_CASEFOLDING
 	LOGINFO("Force setting casefolding props to true\n");
 	TWFunc::Property_Override("external_storage.casefold.enabled", "1");
@@ -678,7 +678,9 @@ void TWPartitionManager::Decrypt_Data() {
 			Set_Crypto_Type("file");
 #ifdef TW_INCLUDE_FBE_METADATA_DECRYPT
 #ifdef USE_FSCRYPT
-			if (android::vold::fscrypt_mount_metadata_encrypted(Decrypt_Data->Actual_Block_Device, Decrypt_Data->Mount_Point, false, false, Decrypt_Data->Current_File_System, TWFunc::Path_Exists(additional_fstab) ? additional_fstab : "")) {
+			std::string metadata_fstab = TWFunc::Path_Exists(additional_fstab) ? additional_fstab : "/etc/recovery.fstab";
+			LOGINFO("Using fstab for metadata decrypt: %s\n", metadata_fstab.c_str());
+			if (android::vold::fscrypt_mount_metadata_encrypted(Decrypt_Data->Actual_Block_Device, Decrypt_Data->Mount_Point, false, false, Decrypt_Data->Current_File_System, metadata_fstab)) {
 				std::string crypto_blkdev = android::base::GetProperty("ro.crypto.fs_crypto_blkdev", "error");
 				Decrypt_Data->Decrypted_Block_Device = crypto_blkdev;
 				LOGINFO("Successfully decrypted metadata encrypted data partition with new block device: '%s'\n", crypto_blkdev.c_str());
