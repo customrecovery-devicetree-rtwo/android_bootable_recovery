@@ -715,6 +715,9 @@ void TWPartitionManager::Decrypt_Data() {
 					}
 					Decrypt_Data->Is_FBE = true;
 					DataManager::SetValue(TW_IS_FBE, 1);
+					if (!Decrypt_Data->Decrypt_FBE_DE()) {
+						LOGERR("Unable to decrypt FBE device\n");
+					}
 					if (Decrypt_Data->Has_Data_Media) {
 						LOGINFO("Attempting user 0 FBE decrypt with default password after metadata decrypt\n");
 						if (android::keystore::Decrypt_User(0, "!")) {
@@ -724,9 +727,6 @@ void TWPartitionManager::Decrypt_Data() {
 						} else {
 							LOGINFO("User 0 FBE decrypt with default password failed\n");
 						}
-					}
-					if (!Decrypt_Data->Decrypt_FBE_DE()) {
-						LOGERR("Unable to decrypt FBE device\n");
 					}
 
 				} else {
