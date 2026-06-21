@@ -2339,6 +2339,12 @@ void TWPartitionManager::Mark_User_Decrypted(int userID) {
 void TWPartitionManager::Check_Users_Decryption_Status() {
 #ifdef TW_INCLUDE_FBE
 	int all_is_decrypted = 1;
+	if (Users_List.empty()) {
+		LOGINFO("No FBE users were parsed; users are not decrypted.\n");
+		DataManager::SetValue("tw_all_users_decrypted", "0");
+		property_set("twrp.all.users.decrypted", "false");
+		return;
+	}
 	std::vector<users_struct>::iterator iter;
 	for (iter = Users_List.begin(); iter != Users_List.end(); iter++) {
 		if (!(*iter).isDecrypted) {
@@ -2351,8 +2357,10 @@ void TWPartitionManager::Check_Users_Decryption_Status() {
 		LOGINFO("All found users are decrypted.\n");
 		DataManager::SetValue("tw_all_users_decrypted", "1");
 		property_set("twrp.all.users.decrypted", "true");
-	} else
+	} else {
 		DataManager::SetValue("tw_all_users_decrypted", "0");
+		property_set("twrp.all.users.decrypted", "false");
+	}
 #endif
 }
 
