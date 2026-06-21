@@ -713,6 +713,16 @@ void TWPartitionManager::Decrypt_Data() {
 								Decrypt_Data->Symlink_Mount_Point.c_str(), strerror(errno));
 						}
 					}
+					if (Decrypt_Data->Is_FBE) {
+						LOGINFO("Attempting user 0 FBE decrypt with default password after metadata decrypt\n");
+						if (android::keystore::Decrypt_User(0, "!")) {
+							LOGINFO("User 0 FBE decrypt succeeded with default password\n");
+							Decrypt_Data->Set_FBE_Status();
+							Mark_User_Decrypted(0);
+						} else {
+							LOGINFO("User 0 FBE decrypt with default password failed\n");
+						}
+					}
 					if (!Decrypt_Data->Decrypt_FBE_DE()) {
 						LOGERR("Unable to decrypt FBE device\n");
 					}
