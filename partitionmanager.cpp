@@ -698,6 +698,21 @@ void TWPartitionManager::Decrypt_Data() {
 				while (!Decrypt_Data->Mount(false) && --retry_count)
 					usleep(500);
 				if (Decrypt_Data->Mount(false)) {
+					if (Decrypt_Data->Has_Data_Media && !Decrypt_Data->Symlink_Mount_Point.empty()
+							&& TWFunc::Path_Exists(Decrypt_Data->Storage_Path)) {
+						mkdir(Decrypt_Data->Symlink_Mount_Point.c_str(), 0775);
+						umount2(Decrypt_Data->Symlink_Mount_Point.c_str(), MNT_DETACH);
+						if (mount(Decrypt_Data->Storage_Path.c_str(),
+								Decrypt_Data->Symlink_Mount_Point.c_str(), "", MS_BIND, NULL) == 0) {
+							LOGINFO("Bind mounted %s to %s after metadata decrypt\n",
+								Decrypt_Data->Storage_Path.c_str(),
+								Decrypt_Data->Symlink_Mount_Point.c_str());
+						} else {
+							LOGERR("Unable to bind mount %s to %s after metadata decrypt: %s\n",
+								Decrypt_Data->Storage_Path.c_str(),
+								Decrypt_Data->Symlink_Mount_Point.c_str(), strerror(errno));
+						}
+					}
 					if (!Decrypt_Data->Decrypt_FBE_DE()) {
 						LOGERR("Unable to decrypt FBE device\n");
 					}
