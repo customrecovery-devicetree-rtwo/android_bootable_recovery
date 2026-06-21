@@ -1141,6 +1141,7 @@ int TWFunc::tw_reboot(RebootCommand command)
 		case rb_current:
 		case rb_system:
       			if (DoDeactivate == 1) { Deactivation_Process(); } 
+			Clear_Bootloader_Message();
 			Update_Intent_File("s");
 			sync();
 			check_and_run_script("/system/bin/rebootsystem.sh", "reboot system");
