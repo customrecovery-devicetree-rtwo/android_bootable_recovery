@@ -1,7 +1,9 @@
 service health-hal-2-0 /system/bin/android.hardware.health@2.0-service
+    interface android.hardware.health@2.0::IHealth default
+    class hal
     disabled
     user root
     group root
-    capabilities WAKE_ALARM
+    capabilities WAKE_ALARM BLOCK_SUSPEND
     file /dev/kmsg w
     seclabel u:r:recovery:s0

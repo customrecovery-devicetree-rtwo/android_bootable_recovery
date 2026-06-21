@@ -318,7 +318,7 @@ ifneq ($(TW_LOAD_VENDOR_MODULES),)
     LOCAL_SRC_FILES += kernel_module_loader.cpp
     LOCAL_C_INCLUDES += system/core/libmodprobe/include
     LOCAL_STATIC_LIBRARIES += libmodprobe
-    LOCAL_CFLAGS += -DTW_LOAD_VENDOR_MODULES=$(TW_LOAD_VENDOR_MODULES)
+    LOCAL_CFLAGS += "-DTW_LOAD_VENDOR_MODULES=$(TW_LOAD_VENDOR_MODULES)"
     ifeq ($(TW_LOAD_VENDOR_MODULES_EXCLUDE_GKI),true)
         LOCAL_CFLAGS += -DTW_LOAD_VENDOR_MODULES_EXCLUDE_GKI
     endif
@@ -648,8 +648,8 @@ LOCAL_REQUIRED_MODULES += $(TWRP_REQUIRED_MODULES)
 #TW_THEME_VERSION := $(shell grep TW_THEME_VERSION bootable/recovery/variables.h | cut -d ' ' -f 3)
 
 LOCAL_POST_INSTALL_CMD += \
-    sed -i "s/{themeversion}/$(TW_THEME_VERSION)/" $(TARGET_RECOVERY_ROOT_OUT)/twres/splash.xml; \
-    sed -i "s/{themeversion}/$(TW_THEME_VERSION)/" $(TARGET_RECOVERY_ROOT_OUT)/twres/ui.xml;
+    if [ -f $(TARGET_RECOVERY_ROOT_OUT)/twres/splash.xml ]; then sed -i "s/{themeversion}/$(TW_THEME_VERSION)/" $(TARGET_RECOVERY_ROOT_OUT)/twres/splash.xml; fi; \
+    if [ -f $(TARGET_RECOVERY_ROOT_OUT)/twres/ui.xml ]; then sed -i "s/{themeversion}/$(TW_THEME_VERSION)/" $(TARGET_RECOVERY_ROOT_OUT)/twres/ui.xml; fi;
 
 include $(BUILD_EXECUTABLE)
 

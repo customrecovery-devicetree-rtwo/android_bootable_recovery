@@ -4651,8 +4651,16 @@ bool TWPartitionManager::Prepare_Super_Volume(TWPartition* twrpPart) {
     };
 
     fstab.emplace_back(fstabEntry);
-    if (!fs_mgr_update_logical_partition(&fstabEntry)) {
-        LOGINFO("unable to update logical partition: %s\n", twrpPart->Get_Mount_Point().c_str());
+    for (int attempts = 0; attempts < 50; attempts++) {
+        fstabEntry.blk_device = blk_device_partition;
+        if (fs_mgr_update_logical_partition(&fstabEntry)) {
+            break;
+        }
+        Setup_Super_Devices();
+        usleep(100000);
+    }
+    if (fstabEntry.blk_device == blk_device_partition) {
+        LOGINFO("unable to update logical partition: %s (%s)\n", twrpPart->Get_Mount_Point().c_str(), blk_device_partition.c_str());
         return false;
     }
 
