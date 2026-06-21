@@ -686,6 +686,14 @@ void TWPartitionManager::Decrypt_Data() {
 				LOGINFO("Successfully decrypted metadata encrypted data partition with new block device: '%s'\n", crypto_blkdev.c_str());
 #endif
 				Decrypt_Data->Is_Decrypted = true; // Needed to make the mount function work correctly
+				if (Decrypt_Data->Has_Data_Media && TWFunc::Path_Exists("/data/media/0")) {
+					Decrypt_Data->Storage_Path = "/data/media/0";
+					Decrypt_Data->Symlink_Path = Decrypt_Data->Storage_Path;
+					DataManager::SetValue(TW_INTERNAL_PATH, Decrypt_Data->Storage_Path);
+					DataManager::SetValue("tw_storage_path", Decrypt_Data->Storage_Path);
+					LOGINFO("Using user 0 data/media storage after metadata decrypt: %s\n",
+						Decrypt_Data->Storage_Path.c_str());
+				}
 				int retry_count = 10;
 				while (!Decrypt_Data->Mount(false) && --retry_count)
 					usleep(500);
