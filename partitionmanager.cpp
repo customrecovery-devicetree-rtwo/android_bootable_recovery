@@ -22,6 +22,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <signal.h>
 #include <sys/stat.h>
 #include <sys/vfs.h>
 #include <unistd.h>
@@ -114,12 +115,6 @@ extern "C" {
 #endif
 #endif
 
-#ifdef AB_OTA_UPDATER
-#include <android/hardware/boot/1.0/IBootControl.h>
-using android::hardware::boot::V1_0::CommandResult;
-using android::hardware::boot::V1_0::IBootControl;
-#endif
-
 using android::fs_mgr::DestroyLogicalPartition;
 using android::fs_mgr::Fstab;
 using android::fs_mgr::FstabEntry;
@@ -129,6 +124,50 @@ extern bool datamedia;
 std::vector<users_struct> Users_List;
 
 std::string additional_fstab = "/etc/additional.fstab";
+
+#ifdef AB_OTA_UPDATER
+static bool SetActiveSlotWithBootctl(uint32_t slot_number) {
+	const char* bootctl = "/system/bin/bootctl";
+	if (access(bootctl, X_OK) != 0) {
+		LOGERR("bootctl is not executable at %s: %s\n", bootctl, strerror(errno));
+		return false;
+	}
+
+	std::string slot_arg = std::to_string(slot_number);
+	pid_t pid = fork();
+	if (pid < 0) {
+		LOGERR("fork failed for bootctl set-active-boot-slot: %s\n", strerror(errno));
+		return false;
+	}
+	if (pid == 0) {
+		execl(bootctl, bootctl, "set-active-boot-slot", slot_arg.c_str(), (char*)nullptr);
+		_exit(127);
+	}
+
+	int status = 0;
+	for (int i = 0; i < 50; ++i) {
+		pid_t rc = waitpid(pid, &status, WNOHANG);
+		if (rc == pid) {
+			if (WIFEXITED(status) && WEXITSTATUS(status) == 0) {
+				LOGINFO("bootctl set-active-boot-slot %u succeeded\n", slot_number);
+				return true;
+			}
+			LOGERR("bootctl set-active-boot-slot %u failed, status=%d\n", slot_number, status);
+			return false;
+		}
+		if (rc < 0) {
+			LOGERR("waitpid failed for bootctl: %s\n", strerror(errno));
+			return false;
+		}
+		usleep(100000);
+	}
+
+	LOGERR("bootctl set-active-boot-slot %u timed out; killing child\n", slot_number);
+	kill(pid, SIGKILL);
+	waitpid(pid, &status, 0);
+	return false;
+}
+#endif
 
 TWPartitionManager::TWPartitionManager(void) {
 	mtp_was_enabled = false;
@@ -3723,18 +3762,10 @@ void TWPartitionManager::Set_Active_Slot(const string& Slot) {
 	LOGINFO("Setting active slot %s\n", Slot.c_str());
 #ifdef AB_OTA_UPDATER
 	if (!Active_Slot_Display.empty()) {
-		android::sp<IBootControl> module = IBootControl::getService();
-		if (module == nullptr) {
-			LOGERR("Error getting bootctrl module.\n");
-		} else {
-			uint32_t slot_number = 0;
-			if (Slot == "B")
-				slot_number = 1;
-			CommandResult result;
-			auto ret = module->setActiveBootSlot(slot_number, [&result]
-					(const CommandResult &cb_result) { result = cb_result; });
-			if (!ret.isOk() || !result.success)
-				gui_msg(Msg(msg::kError, "unable_set_boot_slot=Error changing bootloader boot slot to {1}")(Slot));
+		uint32_t slot_number = Slot == "B" ? 1 : 0;
+		if (!SetActiveSlotWithBootctl(slot_number)) {
+			gui_msg(Msg(msg::kError, "unable_set_boot_slot=Error changing bootloader boot slot to {1}")(Slot));
+			return;
 		}
 		DataManager::SetValue("tw_active_slot", Slot); // Doing this outside of this if block may result in a seg fault because the DataManager may not be ready yet
 	}
