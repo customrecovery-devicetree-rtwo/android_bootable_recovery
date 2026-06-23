@@ -802,13 +802,19 @@ void TWPartition::Set_FBE_Status() {
 
 #ifdef TW_INCLUDE_CRYPTO
 static bool Fix_Stale_UserKeys_Policy() {
+    LOGINFO("Fix_Stale_UserKeys_Policy: entered\n");
     std::string version_path = "/data/misc/vold/user_keys/de/0/version";
-    if (!TWFunc::Path_Exists(version_path))
+    if (!TWFunc::Path_Exists(version_path)) {
+        LOGINFO("Fix_Stale_UserKeys_Policy: path does not exist\n");
         return false;
-    std::string dummy;
-    if (android::base::ReadFileToString(version_path, &dummy))
+    }
+    // Check if the file is actually readable (open with same flags as vold uses)
+    android::base::unique_fd test_fd(open(version_path.c_str(), O_RDONLY | O_CLOEXEC | O_NOFOLLOW));
+    if (test_fd != -1) {
+        LOGINFO("Fix_Stale_UserKeys_Policy: file is already readable, no fix needed\n");
         return false;
-    LOGINFO("user_keys/de/0/version unreadable - stale fscrypt hw-wrapped key. Fixing...\n");
+    }
+    LOGINFO("Fix_Stale_UserKeys_Policy: open failed errno=%d (%s) - fixing stale policy...\n", errno, strerror(errno));
     android::base::unique_fd dir_fd(open("/data/misc/vold/user_keys/de/0/", O_RDONLY | O_DIRECTORY | O_CLOEXEC));
     if (dir_fd == -1) { LOGERR("Failed to open user_keys/de/0/\n"); return false; }
     struct fscrypt_get_policy_ex_arg policy_arg;
