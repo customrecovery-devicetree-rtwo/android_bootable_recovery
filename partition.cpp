@@ -800,64 +800,6 @@ void TWPartition::Set_FBE_Status() {
 	}
 }
 
-#ifdef TW_INCLUDE_CRYPTO
-static bool Fix_Stale_UserKeys_Policy() {
-    LOGINFO("Fix_Stale_UserKeys_Policy: entered\n");
-    std::string version_path = "/data/misc/vold/user_keys/de/0/version";
-    if (!TWFunc::Path_Exists(version_path)) {
-        LOGINFO("Fix_Stale_UserKeys_Policy: path does not exist\n");
-        return false;
-    }
-    // Check if the file is actually readable (open with same flags as vold uses)
-    android::base::unique_fd test_fd(open(version_path.c_str(), O_RDONLY | O_CLOEXEC | O_NOFOLLOW));
-    if (test_fd != -1) {
-        LOGINFO("Fix_Stale_UserKeys_Policy: file is already readable, no fix needed\n");
-        return false;
-    }
-    LOGINFO("Fix_Stale_UserKeys_Policy: open failed errno=%d (%s) - fixing stale policy...\n", errno, strerror(errno));
-    android::base::unique_fd dir_fd(open("/data/misc/vold/user_keys/de/0/", O_RDONLY | O_DIRECTORY | O_CLOEXEC));
-    if (dir_fd == -1) { LOGERR("Failed to open user_keys/de/0/\n"); return false; }
-    struct fscrypt_get_policy_ex_arg policy_arg;
-    memset(&policy_arg, 0, sizeof(policy_arg));
-    policy_arg.policy_size = sizeof(policy_arg.policy);
-    if (ioctl(dir_fd, FS_IOC_GET_ENCRYPTION_POLICY_EX, &policy_arg) != 0) {
-        LOGERR("FS_IOC_GET_ENCRYPTION_POLICY_EX failed: %s\n", strerror(errno));
-        return false;
-    }
-    if (policy_arg.policy.version != FSCRYPT_POLICY_V2) {
-        LOGERR("Unexpected policy version: %d\n", policy_arg.policy.version);
-        return false;
-    }
-    android::vold::KeyBuffer device_key;
-    if (!android::vold::retrieveKey("/data/unencrypted/key", android::vold::kEmptyAuthentication, &device_key)) {
-        LOGERR("Failed to read system DE key from /data/unencrypted/key/\n");
-        return false;
-    }
-    char hex[33];
-    for (int i = 0; i < FSCRYPT_KEY_IDENTIFIER_SIZE; i++)
-        snprintf(hex + i*2, 3, "%02x", policy_arg.policy.v2.master_key_identifier[i]);
-    hex[32] = 0;
-    size_t payload_size = sizeof(struct fscrypt_provisioning_key_payload) + device_key.size();
-    std::vector<uint8_t> payload_buf(payload_size, 0);
-    struct fscrypt_provisioning_key_payload* prov = (struct fscrypt_provisioning_key_payload*)payload_buf.data();
-    prov->type = FSCRYPT_KEY_SPEC_TYPE_IDENTIFIER;
-    memcpy(prov->raw, device_key.data(), device_key.size());
-    int kid = syscall(__NR_add_key, "fscrypt-provisioning", hex, payload_buf.data(), payload_size, KEY_SPEC_SESSION_KEYRING);
-    if (kid == -1) {
-        if (errno == EEXIST) {
-            LOGINFO("fscrypt-provisioning key already exists (EEXIST)\n");
-        } else {
-            LOGERR("add_key fscrypt-provisioning failed: %s\n", strerror(errno));
-            return false;
-        }
-    }
-    sync();
-    android::base::WriteStringToFile("2", "/proc/sys/vm/drop_caches");
-    LOGINFO("Fixe: fscrypt-provisioning key added with old identifier\n");
-    return true;
-}
-#endif
-
 bool TWPartition::Decrypt_FBE_DE() {
 if (TWFunc::Path_Exists("/data/unencrypted/key/version")) {
 		DataManager::SetValue(TW_IS_FBE, 1);
@@ -897,7 +839,6 @@ if (TWFunc::Path_Exists("/data/unencrypted/key/version")) {
 	ExcludeAll(Mount_Point + "/cache");
 	ExcludeAll(Mount_Point + "/per_boot"); // removed each boot by init
 	ExcludeAll(Mount_Point + "/gsi"); // cow devices
-	Fix_Stale_UserKeys_Policy();
 	int retry_count = 3;
 	while (!android::keystore::Decrypt_DE() && --retry_count)
 		usleep(2000);
